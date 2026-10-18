@@ -29,6 +29,19 @@ jobs:
 
           Restart-Service -Name TermService -Force
 
+       
+      - name: Diagnose RDP Username Secret
+        shell: pwsh
+        env:
+          RDP_USERNAME: ${{ secrets.RDP_USERNAME }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:RDP_USERNAME)) {
+            Write-Error "RDP_USERNAME is unavailable or empty."
+            exit 1
+          }
+
+          Write-Host "RDP_USERNAME is available and non-empty."
+
       - name: Create or Update Static RDP User (robust)
         shell: pwsh
         env:
