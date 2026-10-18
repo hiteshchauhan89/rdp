@@ -53,6 +53,28 @@ jobs:
           $username = $env:RDP_USERNAME
           $password = $env:RDP_PASSWORD
 
+          
+      - name: Verify Repository Secrets
+        shell: pwsh
+        env:
+          CHECK_USERNAME: ${{ secrets.RDP_USERNAME }}
+          CHECK_PASSWORD: ${{ secrets.RDP_PASSWORD }}
+        run: |
+          Write-Host "Workflow file: $env:GITHUB_WORKFLOW"
+          Write-Host "Repository: $env:GITHUB_REPOSITORY"
+          Write-Host "Branch: $env:GITHUB_REF_NAME"
+
+          if ([string]::IsNullOrWhiteSpace($env:CHECK_USERNAME)) {
+            throw "RDP_USERNAME is unavailable to this workflow."
+          }
+
+          if ([string]::IsNullOrWhiteSpace($env:CHECK_PASSWORD)) {
+            throw "RDP_PASSWORD is unavailable to this workflow."
+          }
+
+          Write-Host "Both repository secrets are available."
+
+
           # Defensive checks
           if (-not $username -or $username.Trim().Length -eq 0) {
             Write-Error "RDP_USERNAME is empty or not provided. Set the secret 'RDP_USERNAME'."
